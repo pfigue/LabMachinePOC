@@ -27,7 +27,7 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/Berlin'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -90,9 +90,72 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+    'django_extensions',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'labmachine.apps.branch',
 )
+
+# Tell django to use celery
+INSTALLED_APPS += ('djcelery',)
+import djcelery
+djcelery.setup_loader()
+
+# Tell celery to use RabbitMQ
+CELERY_RESULT_BACKEND = "amqp"
+CELERY_IMPORTS = ('labmachine.fabsteps.executor',)
+CELERYD_CONCURRENCY = 2
+
+
+FIRST_UWSGI_PORT = 10000
+BRANCH_STORE = '/var/www/lieferheld.lab/'
+VIRTUALENV_STORE = '/var/www/.virtualenvs/'
+LOG_STORE = '/var/www/.branchlogs/'
+SUBDOMAIN = 'lieferheld.lab'
+
+
+FABRIC_HOST = 'www-data@192.168.1.250'
+# Environment vars for new branches
+ENVIRONMENT_VARS = {'DOWANT_SETTINGS': 'branch_object.settings_file_path',
+                    'DJANGO_SETTINGS_MODULE': '\'settings\'',
+                    'DOWANT_DB_NAME': 'branch_object.db_name',
+                    'DOWANT_BROKER_VHOST': 'branch_object.broker_vhost',
+                    'PYTHONHOME': 'branch_object.virtualenv_dir',
+                    'PYTHONPATH': '\'%s/:%s/msupport/\' % '\
+                        '(branch_object.directory, branch_object.directory)',
+                    'PYTHONUNBUFFERED': '\'YEAH\'',
+                    'DIR': '\'%s/\'%branch_object.directory',
+                    'MAN': '\'%s/dowant/\'%branch_object.code_dir',
+                    'DOWANT_BRANCH_URI': '\'http://%s\'%branch_object.uri', }
+# Where are the config files templates?
+SUPERVISOR_TEMPLATE_PATH='/home/pablo/Escritorio/Workspace/labmachine/fabsteps/services/'
+SUPERVISOR_TEMPLATE_LIST = (
+    (
+        # Path to the template of the celery worker config file
+        'celery.conf',
+        # Path where the template will be installed
+        'config/supervisor/celery.conf',
+        # Task name for supervisor group. None if no supervisor
+        'celery'),
+    # uWSGI
+    ('uwsgi.conf',
+     'config/supervisor/uwsgi.conf',
+     'uwsgi'),
+    # Config to group supervisor task
+    ('group.conf',
+     'config/supervisor/group.conf',
+     None),
+    # Web server
+    ('nginx.conf',
+     'config/nginx/lab.conf',
+     None),
+    )
+
+# Config of celery broker
+BROKER_HOST = 'localhost'
+BROKER_PORT = 5672
+BROKER_VHOST = 'headquarters'
+BROKER_USER = 'headquarters_user'
+BROKER_PASSWORD = 'headquarters_user_password'
