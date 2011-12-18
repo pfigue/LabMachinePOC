@@ -109,7 +109,7 @@ CELERY_IMPORTS = ('labmachine.fabsteps.executor',)
 CELERYD_CONCURRENCY = 2
 
 
-FIRST_UWSGI_PORT = 10000
+FIRST_UWSGI_PORT = 11000
 BRANCH_STORE = '/var/www/lieferheld.lab/'
 VIRTUALENV_STORE = '/var/www/.virtualenvs/'
 LOG_STORE = '/var/www/.branchlogs/'
