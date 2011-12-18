@@ -1,0 +1,51 @@
+{% include "header.html" %}
+
+<table>
+  {% for entry in object_list %}
+  {% ifequal entry.state.id 4 %}
+     {% ifequal entry.unittests_state.id 3 %}
+  <tr class="healthy">
+     {% else %}
+  <tr class="hangover">
+     {% endifequal %}
+  {% else %}
+  <tr class="ill">
+  {% endifequal %}
+    <td>
+      <table>
+	      <tr><td><a href="/view-a-branch/{{entry.id_branch}}/">{{ entry.dev }}, {{ entry.branch }}</a></td></tr>
+	      <tr><td><em>{{entry.state.caption}}: ({{ entry.state_last_mod|date:"Y-m-d H:i:s" }})</em></td></tr>
+	      <tr><td><em>{{entry.unittests_state.caption}} ({{ entry.unittests_state_last_mod|date:"Ymd H:i:s" }})</em></td></tr>
+      </table>
+    </td>
+    <td>
+    <table>
+      <tr><td><a href="/branch/update/{{ entry.dev }}/{{ entry.branch }}/">Update branch</a></td></tr>
+      <tr><td><a href="/branch/delete/{{ entry.dev }}/{{ entry.branch }}/">Delete branch</a></td></tr>
+    </table>
+    </td>
+    <td>
+    <table>
+      <tr><td><a href="http://{{ entry.uri }}/" target="_blank">Working copy</a></td></tr>
+      <tr><td><a href="http://m.{{ entry.uri }}/" target="_blank">Mobile site</a></td></tr>
+      <!-- <tr><td><a href="https://github.com/{{entry.dev}}/liferheldde/{{entry.branch}}/">GitHub repo</a></td></tr> -->
+      <!-- <tr><td><a href="FIXME">jira</a></td></tr>-->
+    </table>
+    </td>
+    <td>
+    <table>
+      <tr><td><a href="/view-a-branch-logs/{{entry.id_branch}}">Show me <b>logs</b></a></td></tr>
+      <tr><td><a href="/view-a-branch-emails-logs/{{entry.id_branch}}">Show me <b>e-mails</b></a></td></tr>
+      <tr><td><a href="/view-a-branch-emails-sendgrid-logs/{{entry.id_branch}}">Show me <b>SendGrid e-mails</b></a></td></tr>
+      <tr><td><a href="/view-a-branch-sms-logs/{{entry.id_branch}}">Show me <b>SMSs</b></a></td></tr>
+    </table>
+    </td>
+    <td>
+    <table>
+      <!-- <tr><td><a href="/tasty-lettuce/one/{{entry.id_branch}}">Run the lettuce</a></td></tr> -->
+      <tr><td><a href="/runny-nose/one/{{entry.id_branch}}">Run the nose</a></td></tr>
+    </table>
+    </td>
+  </tr>
+  {% endfor %}
+<table>
