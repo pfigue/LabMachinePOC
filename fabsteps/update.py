@@ -5,6 +5,9 @@ update.py
 Collection of functions related to the update of installed branches
 """
 
+from labmachine.apps.branch.models import retrieve_branch
+from labmachine.fabsteps.helpers import run_commands
+
 # from cont_building import state
 # from cont_building.models import Branch
 # from cont_building.homeworks.install import install_config_files
@@ -54,9 +57,9 @@ def update_repo(dev, branch):
     """
     Update the branch's repository
     """
-    branch_object = Branch.objects.get(dev=dev, branch=branch)
+    branch_object = retrieve_branch(dev=dev, branch=branch)
     return run_commands(['git fetch origin',
-                         'git pull origin %s' % branch_object.branch, ],
+                          'git pull origin %s' % branch_object.branch, ],
                           directory=branch_object.code_dir)
 
 
@@ -64,6 +67,6 @@ def remove_pyc_files(dev, branch):
     """
     Clean *.pyc
     """
-    branch_object = Branch.objects.get(dev=dev, branch=branch)
+    branch_object = retrieve_branch(dev=dev, branch=branch)
     return run_commands(['find . -name "*.pyc" -exec rm -f {} \;', ],
                           directory=branch_object.code_dir)
