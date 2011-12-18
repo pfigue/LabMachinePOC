@@ -87,6 +87,7 @@ def fill_in_the_templates(branch_object):
         'project_name': branch_object.cleared_project_name,
         'db_name': branch_object.db_name,
         'project_uri': branch_object.uri,
+        'project_mobile_uri': 'm.%s' % branch_object.uri,
         'project_path': branch_object.directory,
         'code_dir': branch_object.code_dir,
         'virtualenv': branch_object.virtualenv_dir,

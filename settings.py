@@ -149,7 +149,11 @@ SUPERVISOR_TEMPLATE_LIST = (
      None),
     # Web server
     ('nginx.conf',
-     'config/nginx/lab.conf',
+     'config/nginx/nginx.conf',
+     None),
+    # Mobile web server
+    ('mobile-nginx.conf',
+     'config/nginx/mobile-nginx.conf',
      None),
     )
 
