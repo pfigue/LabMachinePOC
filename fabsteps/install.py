@@ -227,7 +227,7 @@ def install_pip_requirements(dev, branch):
     branch_object = Branch.objects.get(dev=dev, branch=branch)
     requirements_file = join(branch_object.code_dir, 'dowant/requirements.pip')
     return run_commands(
-        ['pip install -E %s -r %s' % (branch_object.virtualenv_dir,
+        ['pip install --timeout=60 -E %s -r %s' % (branch_object.virtualenv_dir,
                                       requirements_file), ])
 
 
