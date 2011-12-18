@@ -26,76 +26,6 @@ from labmachine.fabsteps.helpers import RunCommandsException
 # from cont_building.homeworks.auxiliar import use_prefab_database
 
 
-# def init_branch(dev, branch):
-#     """
-#     Run all the steps to install a new branch
-#     """
-#     log = CmdLog(dev, branch, name='install')
-#     log.write('Beginning with install for %s,%s' % (dev, branch))
-
-#     change_branch_state(dev, branch, state.BEING_INSTALLED)
-#     put_event(dev, branch, state.EV_INSTALL_BEGIN)
-
-#     for task in (install_dir_structure_pre_repo,
-#                  install_repo,
-#                  install_branch,
-#                  install_dir_structure_post_repo,
-#                  install_virtualenv,
-#                  install_config_files,
-#                  install_rabbit_vhost,
-#                  install_pip_requirements,
-#                  install_database,
-#                  install_django_stuff,
-#                  restart_services, ):
-#         log.write('I\'m going with %s' % task.__name__)
-#         try:
-#             step(task, dev, branch, log)
-#         except RunCommandsException:
-#             change_branch_state(dev, branch, state.INSTALL_FAILED)
-#             put_event(dev, branch, state.EV_INSTALL_END)
-#             log.close()
-#             raise
-
-#     log.write('Done with install for %s,%s' % (dev, branch))
-#     # NOTE reread the object. Functions like install_config_files
-#     # modify the entry in the DB
-#     # NOTE if we don't read it again, changes will be discharged
-#     change_branch_state(dev, branch, state.READY)
-#     put_event(dev, branch, state.EV_INSTALL_END)
-#     log.close()
-#     return True
-
-
-# def init_branch_skipsteps(dev, branch, task_list):
-#     """
-#     Install a new branch. This gives the possibility of skip several steps
-#     """
-#     log = CmdLog(dev, branch, name='install')
-#     log.write('Beginning with install for %s,%s' % (dev, branch))
-
-#     change_branch_state(dev, branch, state.BEING_INSTALLED)
-#     put_event(dev, branch, state.EV_INSTALL_BEGIN)
-
-#     for task in task_list:
-#         log.write('I\'m going with %s' % task.__name__)
-#         try:
-#             step(task, dev, branch, log)
-#         except RunCommandsException:
-#             change_branch_state(dev, branch, state.INSTALL_FAILED)
-#             put_event(dev, branch, state.EV_INSTALL_END)
-#             log.close()
-#             raise
-
-#     log.write('Done with install for %s,%s' % (dev, branch))
-#     # NOTE reread the object. Functions like install_config_files
-#     # modify the entry in the DB
-#     # NOTE if we don't read it again, changes will be discharged
-#     change_branch_state(dev, branch, state.READY)
-#     put_event(dev, branch, state.EV_INSTALL_END)
-#     log.close()
-#     return True
-
-
 def install_virtualenv(dev, branch):
     """
     Prepare an empty virtualenv
@@ -247,7 +177,8 @@ def look_for_prefab_database(db_name):
     prefab_db_name = None
     output = ''
     # Look for a existing prefab DB
-    for no_copy in range(1, 5):
+    # FIXME don't hardcode the numbers
+    for no_copy in range(1, 6):
         test_name = 'dowant_prefab_%s' % str(no_copy)
         # NOTE: api_apikey is faster than django_session
         sql_command = 'SELECT * FROM api_apikey LIMIT 1;'
@@ -329,31 +260,4 @@ def restart_services(dev, branch):
                     'sudo /etc/init.d/nginx reload', ]
     # NOTE: don't forget to allow www-data run this in sudoers file
     return run_commands(command_list)
-
-# def install_django_stuff(dev, branch):
-#     """
-#     3 steps: install db schema mods., compress the JS (FIX: sure?) and
-#     compile the *.po i18n files
-
-#     NOTE: DB migrations are interactive with the user. If there is,
-#     the step crashes
-#     """
-#     branch_object = Branch.objects.get(dev=dev, branch=branch)
-#     dowant_dir = join(branch_object.code_dir, 'dowant/')
-#     environment = env_to_str(branch_object)
-#     if bool(branch_object.lettuce_mode) is True:
-#         # NOTE: avoid db stuff for lettuces
-#         commands_list = ['%s python manage.py lh_synccompress' % environment,
-#                          '%s python manage.py compilemessages' % environment, ]
-#     # '%s python manage.py test -s' % environment, ]
-#     else:
-#         migrate = '%s python manage.py migrate --delete-ghost-migrations'
-#         commands_list = [
-#             migrate % environment,
-#             '%s python manage.py lh_synccompress' % environment,
-#             '%s python manage.py compilemessages' % environment, ]
-#     # '%s python manage.py test -s'%environment, ]
-#     return run_commands(commands_list,
-#                         directory=dowant_dir)
-
 
