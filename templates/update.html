@@ -1,0 +1,19 @@
+{% include "header.html" %}
+<p>Update a branch: {{ branch_object.dev }}, {{ branch_object.branch }}</p>
+<form method="POST" action="/branch/update-submit/">{% csrf_token %}
+<input type="hidden" name="dev" value="{{ branch_object.dev }}"/>
+<input type="hidden" name="branch" value="{{ branch_object.branch }}"/>
+<p>
+  Steps to do:
+  <ol>
+    <li><input type="checkbox" name="update_repo" checked>Pull from Github</input></li>
+    <li><input type="checkbox" name="remove_pyc_files" checked>Remove *.pyc</input></li>
+    <li><input type="checkbox" name="install_config_files" checked>Reinstall the config files</input></li>
+    <li><input type="checkbox" name="install_pip_requirements" checked>Reinstall the PIP requirements</input></li>
+    <li><input type="checkbox" name="install_django_stuff" checked>Run django commands (migrate, lh_synccompress, compilemessages, nosetest)</input></li>
+    <li><input type="checkbox" name="restart_services" checked>Restart services</input></li>
+   </ol>
+</p>
+<input type="submit"/>
+</form>
+{% include "footer.html" %}

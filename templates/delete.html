@@ -1,0 +1,16 @@
+{% include "header.html" %}
+<p>Delete a branch: {{ branch_object.dev }}, {{ branch_object.branch }}</p>
+<form method="POST" action="/branch/delete-submit/">{% csrf_token %}
+<input type="hidden" name="dev" value="{{ branch_object.dev }}"/>
+<input type="hidden" name="branch" value="{{ branch_object.branch }}"/>
+<p>
+  Steps to do:
+  <ol>
+    {% for step in step_list %}
+    <li><input type="checkbox" name="{{ step }}" checked />{{ step }}</li>
+    {% endfor %}
+  </ol>
+</p>
+<input type="submit"/>
+</form>
+{% include "footer.html" %}

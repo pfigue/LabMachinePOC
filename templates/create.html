@@ -1,0 +1,18 @@
+{% include "header.html" %}
+<p>Add a normal branch</p>
+<form method="POST" action="/branch/create-submit/">{% csrf_token %}
+<p>
+  DEV: <input type="text" name="dev"/></br>
+  BRANCH: <input type="text" name="branch"/></br>
+</p>
+<p>
+  Steps to do:
+  <ol>
+    {% for step in step_list %}
+    <li><input type="checkbox" name="{{ step }}" checked />{{ step }}</li>
+    {% endfor %}
+  </ol>
+</p>
+<input type="submit"/>
+</form>
+{% include "footer.html" %}

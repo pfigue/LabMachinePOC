@@ -1,8 +1,14 @@
 # coding=utf-8
 
+from time import time
+from os.path import join
+from datetime import datetime
+
 from fabric.api import run, cd
 from fabric.api import settings as fabric_settings
 from django.conf import settings as django_settings
+
+from labmachine.apps.branch.models import Branch
 
 # from os import fsync, walk
 # from os import write as fd_write
@@ -34,12 +40,13 @@ def run_commands(list_of_commands, directory='',
     fails.
     Set directory to the directory where you want to run the scripts
     """
-    output = ''
-    with fabric_settings(host_string=django_settings.FABRIC_HOST, warn_only=True):
+    output = u''
+    with fabric_settings(host_string=django_settings.FABRIC_HOST,
+                         warn_only=True, abort_on_prompts=True):
         with cd(directory):
             for command in list_of_commands:
                 result = run(command, pty=pty, shell=shell)
-                output += str(result)
+                output += result.decode('utf8')
                 if result.failed is True and ignore_errors is False:
                     raise RunCommandsException(output)
     return output
@@ -97,3 +104,23 @@ def fill_in_the_templates(branch_object):
         'uwsgi_port': branch_object.uwsgi_port,
         'environment': env_to_str_comma(branch_object),
     }
+
+
+def update_activity_log(dev, branch, step, output):
+    from labmachine.fabsteps import remove_db_entry
+    if remove_db_entry==step:
+        # Don't try to get the Branch from the database
+        # if we already removed it
+        return
+
+    branch_object = Branch.objects.get(dev=dev, branch=branch)
+    log_file = join(branch_object.log_dir,'love-ops.log')
+    with fabric_settings(host_string=django_settings.FABRIC_HOST,
+                         warn_only=True, abort_on_prompts=True):
+        run('echo "[%s] <<<Begin %s>>>" >> %s' %
+            (unicode(datetime.now()), step.__name__, log_file))
+        if output:
+            run('echo "%s" >> %s' %
+                (output.decode('utf8'), log_file)) # FIXME escape the output
+        run('echo "[%s] <<<End %s>>>" >> %s' %
+            (unicode(datetime.now()), step.__name__, log_file))

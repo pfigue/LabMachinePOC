@@ -131,6 +131,7 @@ def install_config_files(dev, branch):
             source = join(django_settings.SUPERVISOR_TEMPLATE_PATH, template_path)
             dest = join(branch_object.directory, target)
             upload_template(source, dest, context=context, backup=False)
+            output += '%s is uploaded\n' % dest
     return output
 
 

@@ -56,7 +56,6 @@ def action_submit(request, action):
     return HttpResponse("%s branch %s, %s" % (action, branch.dev, branch.branch))
 
 
-
 class InvalidInput(Exception):
     pass
 
